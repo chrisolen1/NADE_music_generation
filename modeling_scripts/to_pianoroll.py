@@ -31,8 +31,8 @@ class PianorollEncoderDecoder():
         
     def get_pianoroll(self, data_dir):
         mid = pypianoroll.Multitrack(data_dir)
-        if not mid.is_binarized() and binarize==True: # we we want note velocity info?
-            mid.binarize()
+        if not mid.is_binarized() and self.binarize==True: # we we want note velocity info?
+            mid.self.binarize()
         roll = mid.get_stacked_pianoroll().astype(int)
         return roll
     

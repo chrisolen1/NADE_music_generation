@@ -11,51 +11,71 @@ import numpy as np
 
 import os
 
-# raw input:
+import sys
+sys.path.append("/Users/chrisolen/Documents/uchicago_courses/deep_learning_and_image_recognition/audio_generation")
+from data_cleaning_scripts import data_cleaning_scripts as dcs
 
-data_dir = "/Users/chrisolen/Documents/uchicago_courses/"\
-"deep_learning_and_image_recognition/audio_generation/"\
-"data/midi_files/"
-
-scripts_dir = "/Users/chrisolen/Documents/uchicago_courses/deep_learning_and_image_recognition/audio_generation/NADE_music_generation/"
-
-track_metadata = pd.read_csv(scripts_dir+"data_cleaning_scripts/track_metadata.csv",
-                            index_col='Unnamed: 0')
 
 def search_params():
     ans = {}
     length = len(ans)
+    
     # Time Signature
     while len(ans) == length:
-        time_sig = input("Indicate your preferred time signature [3, 4, 5, or N/A]")
-        if time_sig != "3" and time_sig != "4" and time_sig != "5" and time_sig != "N/A":
-            print("fuck you!")
+        time_signature = input("Indicate your preferred time signature [3/4, 4/4, 5/4, 6/8 or no preference]: ")
+        
+        if time_signature != "3/4" and time_signature != "4/4" and time_signature != "5/4" and \
+        time_signature != "5/4" and time_signature != "6/8" and time_signature != "N/A":
+            print("Enter a valid input: [3/4, 4/4, 5/4, 6/8 or no preference]: ")
         else:
-            ans["time_sig"]=time_sig
+            ans["time_signature"]=time_signature
+    
     return ans
             
 
-
-
-class data_search(**sparams):
-            
-        """Default Attributes"""
-        artist = None
-        song_title = None
-        time_sig = 4.0
-        tempo = None
-        energy = None
-        loudness = None
-        speechiness = None
-        acousticness = None,
-        instrumentalness = None
-        genre = []
+class track_search():
+    
+    """Default Track Attributes"""
+    _defaults = dict(artist=None, 
+                 song_title = None,
+                 time_signature = "4/4", # most common
+                 tempo = None,
+                 energy = None,
+                 loudness = None,
+                 speechiness = None,
+                 acousticness = None,
+                 instrumentalness = None,
+                 genre = [],
+                 instruments = 7, # most common
+                 percussion = 0,
+                 time_signature_changes = 'no',
+                 key_signature = 'G')
+    
+    
+    def __init__(self, **sparams):
         
-
-ans = {}
-len(ans)
-
-(['track_id', 'mb_id', 'artist', 'song_title', 'sp_track_id',
-       'sp_artist_id', 'time_sig', 'tempo', 'energy', 'loudness',
-       'speechiness', 'acousticness', 'instrumentalness', 'genre'],
-      dtype='object')
+        """Determine any differences between default params and sparams"""
+        
+        self.data_dir = dcs.data_manip().data_dir
+        self.scripts_dir = dcs.data_manip().scrips_dir
+        
+        new_vals = {i:j for (i,j) in sparams.items() if sparams[i] != track_search._defaults[i]}
+        if new_vals != {}:
+            self.update(new_vals)
+    
+    def update(self, new_vals):
+        
+        """If differences exist in __init__, we make changes to
+        default params"""
+        
+        for i in new_vals:
+            track_search._defaults[i] = new_vals[i]
+            
+    def query(self):
+        
+        track_metadata = pd.read_csv(self.script_dir + 
+                                     "data_cleaning_scripts/" 
+                                     + "track_metadata_final.csv")
+        
+        
+        
